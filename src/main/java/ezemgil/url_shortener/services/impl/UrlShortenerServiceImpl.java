@@ -5,12 +5,12 @@ import ezemgil.url_shortener.dto.mappers.UrlMapper;
 import ezemgil.url_shortener.model.Url;
 import ezemgil.url_shortener.repository.UrlRepository;
 import ezemgil.url_shortener.services.UrlShortenerService;
-import ezemgil.url_shortener.util.KeyGenerator;
+import ezemgil.url_shortener.util.KeyGeneratorStrategy;
+import ezemgil.url_shortener.util.Sha256KeyGenerator;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static lombok.AccessLevel.PRIVATE;
@@ -21,11 +21,12 @@ import static lombok.AccessLevel.PRIVATE;
 public class UrlShortenerServiceImpl implements UrlShortenerService {
     UrlRepository urlRepository;
     UrlMapper urlMapper;
+    KeyGeneratorStrategy keyGenerator;
 
     @Override
     public UrlDTO createShortUrl(UrlDTO urlRequest) {
         Url url = urlMapper.fromDTO(urlRequest);
-        url.setShortKey(KeyGenerator.generateKey());
+        url.setShortKey(keyGenerator.generateKey());
         urlRepository.save(url);
         return urlMapper.toDTO(url);
     }
@@ -36,3 +37,4 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
         return url.map(urlMapper::toDTO).orElse(null);
     }
 }
+

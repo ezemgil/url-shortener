@@ -1,16 +1,19 @@
 package ezemgil.url_shortener.util;
 
 import ezemgil.url_shortener.exception.KeyGenerationException;
+import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 
-public class KeyGenerator {
+@Component
+public class Sha256KeyGenerator implements KeyGeneratorStrategy {
     private static final int HASH_LENGTH = 8;
 
-    public static String generateKey() {
+    @Override
+    public String generateKey() {
         try {
             String input = String.valueOf(LocalDateTime.now());
             byte[] inputBytes = input.getBytes(StandardCharsets.UTF_8);

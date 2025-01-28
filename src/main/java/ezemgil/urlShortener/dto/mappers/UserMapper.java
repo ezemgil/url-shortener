@@ -10,20 +10,20 @@ public class UserMapper implements Mapper<UserDTO, User> {
     @Override
     public UserDTO toDTO(User entity) {
         return UserDTO.builder()
+                .id(entity.getId())
                 .name(entity.getName())
                 .email(entity.getEmail())
-                .urls(entity.getUrls().stream()
-                        .map(new UrlMapper()::toDTO).toList())
+                .createdAt(entity.getCreatedAt())
                 .build();
     }
 
     @Override
     public User fromDTO(UserDTO dto) {
         return User.builder()
+                .id(dto.getId())
                 .name(dto.getName())
                 .email(dto.getEmail())
-                .urls(dto.getUrls().stream()
-                        .map(new UrlMapper()::fromDTO).toList())
+                .createdAt(dto.getCreatedAt())
                 .build();
     }
 }

@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface UrlRepository extends JpaRepository<Url, Long> {
     Optional<Url> findByShortKeyAndUserId(String shortKey, Long userId);
-    Optional<Url> findByOriginalUrlAndUserId(String originalUrl, Long userId);
+    boolean existsUrlByOriginalUrlAndUserId(String originalUrl, Long userId);
     List<Url> findAllByUserId(Long userId);
 }

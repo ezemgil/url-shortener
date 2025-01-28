@@ -9,4 +9,5 @@ public interface UrlShortenerService {
     UrlDTO getUrl(String shortUrl, UrlDTO urlRequest);
     List<UrlDTO> getAllUrls(UrlDTO urlRequest);
     UrlDTO redirect(String shortUrl, UrlDTO urlRequest);
+    void deleteByShortKeyAndUserId(String shortUrl, UrlDTO urlRequest);
 }

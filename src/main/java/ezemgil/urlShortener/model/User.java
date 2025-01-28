@@ -27,7 +27,6 @@ public class User {
     String name;
 
     @Column(name = "email", nullable = false)
-    @Pattern(regexp = "^(.+)@(.+)$", message = "Invalid email")
     String email;
 
     @Column(name = "created_at", nullable = false)

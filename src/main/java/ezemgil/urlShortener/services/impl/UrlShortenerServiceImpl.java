@@ -3,6 +3,7 @@ package ezemgil.urlShortener.services.impl;
 import ezemgil.urlShortener.dto.UrlDTO;
 import ezemgil.urlShortener.dto.mappers.UrlMapper;
 import ezemgil.urlShortener.dto.mappers.UserMapper;
+import ezemgil.urlShortener.exception.UrlAlreadyExistsException;
 import ezemgil.urlShortener.exception.UrlNotFoundException;
 import ezemgil.urlShortener.model.Url;
 import ezemgil.urlShortener.repository.UrlRepository;
@@ -31,10 +32,9 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 
     @Override
     public UrlDTO createShortUrl(UrlDTO urlRequest) {
-        Optional<Url> url = urlRepository
-                .findByOriginalUrlAndUserId(urlRequest.getOriginalUrl(), urlRequest.getUserId());
-        if (url.isPresent()) {
-            return urlMapper.toDTO(url.get());
+        boolean exists = urlRepository.existsUrlByOriginalUrlAndUserId(urlRequest.getOriginalUrl(), urlRequest.getUserId());
+        if (exists) {
+            throw new UrlAlreadyExistsException();
         }
         Url newUrl = urlMapper.fromDTO(urlRequest);
         newUrl.setShortKey(keyGenerator.generateKey());
@@ -61,6 +61,15 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
         url.setClicks(url.getClicks() + 1);
         urlRepository.save(url);
         return urlMapper.toDTO(url);
+    }
+
+    @Override
+    public void deleteByShortKeyAndUserId(String shortUrl, UrlDTO urlRequest) {
+        urlRepository.findByShortKeyAndUserId(shortUrl, urlRequest.getUserId())
+                .ifPresentOrElse(
+                        urlRepository::delete,
+                        UrlNotFoundException::new
+                );
     }
 }
 

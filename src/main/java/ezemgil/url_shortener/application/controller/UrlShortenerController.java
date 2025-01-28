@@ -6,9 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -22,6 +20,12 @@ public class UrlShortenerController {
     @PostMapping("/shorten")
     public ResponseEntity<UrlDTO> shortenUrl(@RequestBody UrlDTO urlRequest) {
         UrlDTO urlDTO = urlShortenerService.createShortUrl(urlRequest);
+        return ResponseEntity.ok(urlDTO);
+    }
+
+    @GetMapping("/info/{shortKey}")
+    public ResponseEntity<UrlDTO> getUrlInfo(@PathVariable String shortKey) {
+        UrlDTO urlDTO = urlShortenerService.getUrl(shortKey);
         return ResponseEntity.ok(urlDTO);
     }
 }

@@ -29,4 +29,10 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
         urlRepository.save(url);
         return urlMapper.toDTO(url);
     }
+
+    @Override
+    public UrlDTO getUrl(String shortUrl) {
+        Optional<Url> url = urlRepository.findByShortKey(shortUrl);
+        return url.map(urlMapper::toDTO).orElse(null);
+    }
 }

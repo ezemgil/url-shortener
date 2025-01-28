@@ -28,4 +28,10 @@ public class UrlShortenerController {
         UrlDTO urlDTO = urlShortenerService.getUrl(shortKey);
         return ResponseEntity.ok(urlDTO);
     }
+
+    @GetMapping("/{shortKey}")
+    public ResponseEntity<String> redirectToOriginalUrl(@PathVariable String shortKey) {
+        UrlDTO urlDTO = urlShortenerService.getUrl(shortKey);
+        return ResponseEntity.status(302).header("Location", urlDTO.getOriginalUrl()).build();
+    }
 }

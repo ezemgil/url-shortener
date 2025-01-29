@@ -14,9 +14,9 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -52,7 +52,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
     @Override
     public List<UrlDTO> getAllUrls(UrlDTO urlRequest) {
         List<Url> urls = urlRepository.findAllByUserId(urlRequest.getUserId());
-        return Collections.singletonList(urlMapper.toDTO((Url) urls));
+        return urls.stream().map(urlMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override

@@ -1,10 +1,10 @@
 package ezemgil.urlShortener.application.controller;
 
+import ezemgil.urlShortener.application.Response;
 import ezemgil.urlShortener.dto.UrlDTO;
 import ezemgil.urlShortener.services.UrlShortenerService;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,28 +22,32 @@ public class UrlShortenerController {
     UrlShortenerService urlShortenerService;
 
     @PostMapping("/shorten")
-    public ResponseEntity<UrlDTO> shortenUrl(@RequestBody UrlDTO urlRequest) {
+    public ResponseEntity<Response<UrlDTO>> shortenUrl(@RequestBody UrlDTO urlRequest) {
         UrlDTO urlDTO = urlShortenerService.createShortUrl(urlRequest);
-        return ResponseEntity.ok(urlDTO);
+        return Response.created(urlDTO, "Shortened URL created successfully");
     }
 
     @GetMapping("/info/{shortKey}")
-    public ResponseEntity<UrlDTO> getUrlInfo(@PathVariable String shortKey, @RequestBody UrlDTO urlRequest) {
+    public ResponseEntity<Response<UrlDTO>> getUrlInfo(@PathVariable String shortKey, @RequestBody UrlDTO urlRequest) {
         UrlDTO urlDTO = urlShortenerService.getUrl(shortKey, urlRequest);
-        return ResponseEntity.ok(urlDTO);
+        return Response.success(urlDTO, "URL info retrieved successfully");
     }
 
     @GetMapping("/{shortKey}")
-    public ResponseEntity<Void> redirectToOriginalUrl(@PathVariable String shortKey, @RequestBody UrlDTO urlRequest) {
+    public ResponseEntity<Response<Object>> redirectToOriginalUrl(@PathVariable String shortKey, @RequestBody UrlDTO urlRequest) {
         UrlDTO urlDTO = urlShortenerService.redirect(shortKey, urlRequest);
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .header(HttpHeaders.LOCATION, urlDTO.getOriginalUrl())
-                .build();
+        return Response.redirect(urlDTO.getOriginalUrl(), HttpStatus.TEMPORARY_REDIRECT);
     }
 
     @GetMapping("/info")
-    public ResponseEntity<List<UrlDTO>> getAllUrls(@RequestBody UrlDTO urlRequest) {
+    public ResponseEntity<Response<List<UrlDTO>>> getAllUrls(@RequestBody UrlDTO urlRequest) {
         List<UrlDTO> urlDTOs = urlShortenerService.getAllUrls(urlRequest);
-        return ResponseEntity.ok(urlDTOs);
+        return Response.success(urlDTOs, "All URLs retrieved successfully");
+    }
+
+    @DeleteMapping("/delete/{shortKey}")
+    public ResponseEntity<Void> deleteUrl(@PathVariable String shortKey, @RequestBody UrlDTO urlRequest) {
+        urlShortenerService.deleteByShortKeyAndUserId(shortKey, urlRequest);
+        return Response.noContent();
     }
 }

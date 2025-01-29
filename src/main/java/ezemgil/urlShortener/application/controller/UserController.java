@@ -1,5 +1,6 @@
 package ezemgil.urlShortener.application.controller;
 
+import ezemgil.urlShortener.application.Response;
 import ezemgil.urlShortener.dto.UserDTO;
 import ezemgil.urlShortener.services.UserService;
 import lombok.AllArgsConstructor;
@@ -18,26 +19,26 @@ public class UserController {
     UserService userService;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserDTO> getUser(@PathVariable Long userId) {
+    public ResponseEntity<Response<UserDTO>> getUser(@PathVariable Long userId) {
         UserDTO userDTO = userService.findById(userId);
-        return ResponseEntity.ok(userDTO);
+        return Response.success(userDTO, "User retrieved successfully");
     }
 
     @PostMapping("/create")
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userRequest) {
+    public ResponseEntity<Response<UserDTO>> createUser(@RequestBody UserDTO userRequest) {
         UserDTO userDTO = userService.create(userRequest);
-        return ResponseEntity.ok(userDTO);
+        return Response.created(userDTO, "User created successfully");
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable Long userId, @RequestBody UserDTO userRequest) {
+    public ResponseEntity<Response<UserDTO>> updateUser(@PathVariable Long userId, @RequestBody UserDTO userRequest) {
         UserDTO userDTO = userService.updateById(userId, userRequest);
-        return ResponseEntity.ok(userDTO);
+        return Response.created(userDTO, "User updated successfully");
     }
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
         userService.deleteById(userId);
-        return ResponseEntity.noContent().build();
+        return Response.noContent();
     }
 }

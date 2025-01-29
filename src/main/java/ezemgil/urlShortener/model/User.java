@@ -1,7 +1,6 @@
 package ezemgil.urlShortener.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

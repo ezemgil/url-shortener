@@ -11,6 +11,7 @@ public class UrlMapper implements Mapper<UrlDTO, Url> {
     @Override
     public UrlDTO toDTO(Url entity) {
         return UrlDTO.builder()
+                .name(entity.getName())
                 .shortKey(entity.getShortKey())
                 .originalUrl(entity.getOriginalUrl())
                 .createdAt(entity.getCreatedAt())
@@ -22,6 +23,7 @@ public class UrlMapper implements Mapper<UrlDTO, Url> {
     @Override
     public Url fromDTO(UrlDTO dto) {
         return Url.builder()
+                .name(dto.getName())
                 .shortKey(dto.getShortKey())
                 .originalUrl(dto.getOriginalUrl())
                 .createdAt(dto.getCreatedAt())

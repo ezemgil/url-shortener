@@ -21,6 +21,9 @@ public class Url {
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
 
+    @Column(name = "name", nullable = false)
+    String name;
+
     @Column(name = "short_key")
     String shortKey;
 

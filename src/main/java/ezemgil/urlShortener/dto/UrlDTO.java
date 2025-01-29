@@ -15,6 +15,9 @@ import static lombok.AccessLevel.PRIVATE;
 @Builder
 @FieldDefaults(level = PRIVATE)
 public class UrlDTO {
+    @NotBlank(message = "Name is mandatory")
+    String name;
+
     String shortKey;
 
     @NotBlank(message = "Original URL is mandatory")

@@ -27,7 +27,7 @@ public class UrlShortenerController {
         return Response.created(urlDTO, "Shortened URL created successfully");
     }
 
-    @GetMapping("/info/{shortKey}")
+    @GetMapping("/urls/{shortKey}")
     public ResponseEntity<Response<UrlDTO>> getUrlInfo(@PathVariable String shortKey, @RequestBody UrlDTO urlRequest) {
         UrlDTO urlDTO = urlShortenerService.getUrl(shortKey, urlRequest);
         return Response.success(urlDTO, "URL info retrieved successfully");
@@ -39,7 +39,7 @@ public class UrlShortenerController {
         return Response.redirect(urlDTO.getOriginalUrl(), HttpStatus.TEMPORARY_REDIRECT);
     }
 
-    @GetMapping("/info")
+    @GetMapping("/urls")
     public ResponseEntity<Response<List<UrlDTO>>> getAllUrls(@RequestBody UrlDTO urlRequest) {
         List<UrlDTO> urlDTOs = urlShortenerService.getAllUrls(urlRequest);
         return Response.success(urlDTOs, "All URLs retrieved successfully");

@@ -9,7 +9,8 @@ public enum ErrorMessages {
     USER_NOT_FOUND("User not found"),
     USER_ALREADY_EXISTS("User already exists"),
     URL_ALREADY_EXISTS("URL already exists"),
-    USER_WITH_EMAIL_ALREADY_EXISTS("User with email already exists");
+    USER_WITH_EMAIL_ALREADY_EXISTS("User with email already exists"),
+    ENCRYPTION_ERROR("Error while encrypting data");
 
     private final String message;
 

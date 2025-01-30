@@ -12,4 +12,5 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
     Optional<Url> findByShortKeyAndUserId(String shortKey, Long userId);
     boolean existsUrlByOriginalUrlAndUserId(String originalUrl, Long userId);
     List<Url> findAllByUserId(Long userId);
+    boolean existsByShortKey(String shortKey);
 }

@@ -10,19 +10,20 @@ import ezemgil.urlShortener.repository.UrlRepository;
 import ezemgil.urlShortener.services.UrlShortenerService;
 import ezemgil.urlShortener.services.UserService;
 import ezemgil.urlShortener.util.KeyGeneratorStrategy;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static lombok.AccessLevel.PRIVATE;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @FieldDefaults(level = PRIVATE, makeFinal = true)
+@Slf4j
 public class UrlShortenerServiceImpl implements UrlShortenerService {
     UrlRepository urlRepository;
     UrlMapper urlMapper;
@@ -32,12 +33,13 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 
     @Override
     public UrlDTO createShortUrl(UrlDTO urlRequest) {
-        boolean exists = urlRepository.existsUrlByOriginalUrlAndUserId(urlRequest.getOriginalUrl(), urlRequest.getUserId());
-        if (exists) {
+        log.info("Creating short url for {} for user {}", urlRequest.getOriginalUrl(), urlRequest.getUserId());
+        if (urlRepository.existsUrlByOriginalUrlAndUserId(urlRequest.getOriginalUrl(), urlRequest.getUserId())) {
             throw new UrlAlreadyExistsException();
         }
         Url newUrl = urlMapper.fromDTO(urlRequest);
-        newUrl.setShortKey(keyGenerator.generateKey());
+        String shortKey = generateUniqueShortKey();
+        newUrl.setShortKey(shortKey);
         newUrl.setUser(userMapper.fromDTO(userService.findById(urlRequest.getUserId())));
         urlRepository.save(newUrl);
         return urlMapper.toDTO(newUrl);
@@ -45,31 +47,53 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 
     @Override
     public UrlDTO getUrl(String shortUrl, UrlDTO urlRequest) {
-        Optional<Url> url = urlRepository.findByShortKeyAndUserId(shortUrl, urlRequest.getUserId());
-        return url.map(urlMapper::toDTO).orElseThrow(UrlNotFoundException::new);
+        log.info("Getting url for short url {} for user {}", shortUrl, urlRequest.getUserId());
+        return findUrlByShortKeyAndUserId(shortUrl, urlRequest.getUserId());
     }
 
     @Override
     public List<UrlDTO> getAllUrls(UrlDTO urlRequest) {
-        List<Url> urls = urlRepository.findAllByUserId(urlRequest.getUserId());
-        return urls.stream().map(urlMapper::toDTO).collect(Collectors.toList());
+        log.info("Getting all urls for user {}", urlRequest.getUserId());
+        return urlRepository.findAllByUserId(urlRequest.getUserId())
+                .stream()
+                .map(urlMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     public UrlDTO redirect(String shortUrl, UrlDTO urlRequest) {
+        log.info("Redirecting to url for short url {} for user {}", shortUrl, urlRequest.getUserId());
         Url url = urlMapper.fromDTO(getUrl(shortUrl, urlRequest));
-        url.setClicks(url.getClicks() + 1);
-        urlRepository.save(url);
+        incrementClicks(url);
         return urlMapper.toDTO(url);
     }
 
     @Override
     public void deleteByShortKeyAndUserId(String shortUrl, UrlDTO urlRequest) {
+        log.info("Deleting url for short url {} for user {}", shortUrl, urlRequest.getUserId());
         urlRepository.findByShortKeyAndUserId(shortUrl, urlRequest.getUserId())
                 .ifPresentOrElse(
                         urlRepository::delete,
-                        UrlNotFoundException::new
+                        () -> { throw new UrlNotFoundException(); }
                 );
     }
-}
 
+    private UrlDTO findUrlByShortKeyAndUserId(String shortUrl, Long userId) {
+        return urlRepository.findByShortKeyAndUserId(shortUrl, userId)
+                .map(urlMapper::toDTO)
+                .orElseThrow(UrlNotFoundException::new);
+    }
+
+    private String generateUniqueShortKey() {
+        String shortKey;
+        do {
+            shortKey = keyGenerator.generateKey();
+        } while (urlRepository.existsByShortKey(shortKey));
+        return shortKey;
+    }
+
+    private void incrementClicks(Url url) {
+        url.setClicks(url.getClicks() + 1);
+        urlRepository.save(url);
+    }
+}

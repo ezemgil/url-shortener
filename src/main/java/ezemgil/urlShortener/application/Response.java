@@ -52,6 +52,10 @@ public class Response<T> {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    public static ResponseEntity<Response<Object>> tooManyRequests(String message) {
+        return new ResponseEntity<>(new Response<>("error", null, message), HttpStatus.TOO_MANY_REQUESTS);
+    }
+
     @Getter
     @Setter
     public static class Pagination {

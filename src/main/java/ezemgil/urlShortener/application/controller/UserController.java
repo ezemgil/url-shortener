@@ -25,13 +25,13 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Response<UserDTO>> createUser(@RequestBody UserDTO userRequest) {
+    public ResponseEntity<Response<UserDTO>> createUser(@RequestBody UserDTO userRequest) throws Exception {
         UserDTO userDTO = userService.create(userRequest);
         return Response.created(userDTO, "User created successfully");
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<Response<UserDTO>> updateUser(@PathVariable Long userId, @RequestBody UserDTO userRequest) {
+    public ResponseEntity<Response<UserDTO>> updateUser(@PathVariable Long userId, @RequestBody UserDTO userRequest) throws Exception {
         UserDTO userDTO = userService.updateById(userId, userRequest);
         return Response.created(userDTO, "User updated successfully");
     }
